@@ -1,0 +1,35 @@
+# .cet.toml — Project configuration for claude-engineer-toolkit
+# Place this in your project root and commit it for team-wide consistency.
+
+[project]
+name = "my-api"
+language = "python"
+framework = "fastapi"
+description = "Internal billing API"
+
+[claude]
+model = "claude-sonnet-4-5"   # claude-opus-4-5 for higher quality, sonnet for speed
+max_tokens = 4096
+cache = true                   # cache responses locally (~/.cet/cache)
+cache_ttl = 3600               # seconds (1 hour default)
+
+[tools.pr]
+focus = "security"             # default focus for `cet pr`
+team_conventions = """
+  - We use conventional commits (feat:, fix:, chore:)
+  - SQLAlchemy preferred over raw SQL
+  - All public API endpoints must have docstrings
+  - Type hints required on all function signatures
+"""
+
+[tools.test]
+framework = "pytest"
+output_dir = "tests/"
+style = "arrange-act-assert"
+
+[tools.spec]
+output = "docs/openapi.yaml"
+servers = ["https://api.myapp.com/v1", "https://staging-api.myapp.com/v1"]
+
+[plugins]
+paths = ["my_tools/"]          # directories with custom @tool-decorated functions
