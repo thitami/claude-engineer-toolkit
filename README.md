@@ -1,117 +1,108 @@
 # 🛠️ claude-engineer-toolkit (`cet`)
 
-> A CLI toolkit that brings Claude AI into your daily backend engineering workflow.  
-> Not a chatbot. Not a playground. **Sharp tools for working engineers.**
+> Claude AI in your terminal. Not a chatbot wrapper —
+> **sharp, composable tools for backend engineers who ship.**
 
 [![PyPI version](https://badge.fury.io/py/claude-engineer-toolkit.svg)](https://badge.fury.io/py/claude-engineer-toolkit)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen.svg)](tests/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
-```
+```bash
 pip install claude-engineer-toolkit
 export ANTHROPIC_API_KEY=your_key
 
-cet explain legacy_auth.php          # understand any code in seconds
-cet pr --diff                        # review your staged changes like a senior
-cet test user_service.py             # generate pytest scaffolds instantly
-cet spec ./routes/                   # generate OpenAPI spec from your code
+cet explain legacy_auth.php             # understand any code in seconds
+cet pr --branch main                    # review your diff like a senior engineer
+cet spec ./routes/ --framework fastapi  # generate OpenAPI spec from code
 ```
+
+<!-- TODO: add demo GIF here -->
 
 ---
 
-## Why `cet`?
+## The problem
 
-You already use Claude in the browser. `cet` brings it **into your terminal, your git hooks, and your CI pipeline** — where you actually work.
+You open a legacy file. 400 lines of PHP written in 2014. No docs, no tests, no author.
+You need to understand it in 10 minutes.
 
-Each tool is:
-- **Independent** — use one, ignore the rest
-- **Composable** — pipes into your existing workflow
-- **Configurable** — override prompts and behavior via `.cet.toml`
-- **Fast** — responses are cached so re-runs on unchanged files are instant
+Or: you are reviewing a PR while context-switching from three other things.
+You want a second opinion before you approve.
+
+Or: you need an OpenAPI spec for a service that was never documented.
+
+`cet` solves these. One command, one answer, back to work.
 
 ---
 
 ## Tools
 
-### `cet explain` — Understand any code instantly
+### `cet explain` — understand any code instantly
 
-Feed it a file (any language) and get a plain-English breakdown.
-
+Any language. Any size. Structured breakdown: what it does, how it works, what will bite you.
 ```bash
 cet explain legacy_payment_processor.php
 cet explain src/auth/jwt_middleware.go --focus security
 cet explain complicated_query.sql --format markdown > explanation.md
 ```
 
-**Output includes:**
-- High-level summary
-- Component breakdown (class by class / function by function)
-- Hidden complexity & gotchas
-- Suggested improvements
+Output:
+- **Summary** — what this code does and why it exists
+- **Component breakdown** — function by function, non-obvious logic called out
+- **Gotchas** — silent failures, global state, security assumptions, framework magic
+- **Improvements** — specific, named, actionable (not "add error handling")
 
 ---
 
 ### `cet pr` — PR review like a senior engineer
 
-Reviews your staged git diff and gives structured, actionable feedback.
-
+Reviews your staged changes or branch diff. Verdict, real issues, no noise.
 ```bash
-cet pr                              # reviews staged changes
-cet pr --branch main                # compares current branch to main
+cet pr                              # review staged changes
+cet pr --branch main                # compare current branch to main
 cet pr --focus security             # security-focused review
+cet pr --output github-comment      # format for GitHub Actions comment
 ```
 
-**Output includes:**
-- Overall assessment (approve / request changes / needs discussion)
-- File-by-file breakdown with line-level comments
-- Security and performance flags
+Output:
+- **Verdict** — Approve / Request Changes / Needs Discussion
+- **File-by-file review** with quoted diff lines for each flag
+- **Severity flags** — SECURITY · BUG · PERF · DESIGN
+- **Action items** — numbered, merge-blocking issues only
 
 ---
 
-### `cet test` — Generate test scaffolds instantly
+### `cet spec` — generate OpenAPI specs from code
 
-Point it at any Python file and get a ready-to-run pytest scaffold.
-
-```bash
-cet test src/services/user_service.py
-cet test src/api/payments.py --coverage-focus edge-cases
-```
-
-**Output includes:**
-- Full pytest file with imports and fixtures
-- Happy path + edge case tests
-- Suggested mocks and patches
-
----
-
-### `cet spec` — Generate OpenAPI specs from code
-
-Point it at your routes/controllers and get a valid OpenAPI 3.1 spec.
-
+Point it at your routes and get a valid OpenAPI 3.1 YAML. Framework-aware.
 ```bash
 cet spec src/routes/
-cet spec src/api/users.py --output openapi.yaml
+cet spec src/api/users.py --output docs/openapi.yaml
 cet spec . --framework fastapi
+cet spec . --framework flask --format json
 ```
+
+Output: valid OpenAPI 3.1 YAML with inferred schemas, auth, status codes, and realistic examples.
 
 ---
 
 ## Installation
-
 ```bash
 pip install claude-engineer-toolkit
-export ANTHROPIC_API_KEY=your_key_here
-cet --version
+export ANTHROPIC_API_KEY=your_key  # get yours at console.anthropic.com
+cet --help
 ```
+
+Requires Python 3.9+. Works on macOS, Linux, Windows.
 
 ---
 
-## Configuration (`.cet.toml`)
+## Configuration
 
+Drop a `.cet.toml` in your project root. `cet` walks up the directory tree to find it.
 ```toml
 [project]
-name = "my-api"
+name = "billing-api"
 language = "python"
 framework = "fastapi"
 
@@ -122,71 +113,74 @@ cache = true
 [tools.pr]
 focus = "security"
 team_conventions = """
-  - We use conventional commits
-  - SQLAlchemy preferred over raw SQL
+  - Conventional commits (feat:, fix:, chore:)
+  - SQLAlchemy only — no raw SQL
+  - All public endpoints must have docstrings
 """
-
-[tools.test]
-framework = "pytest"
-output_dir = "tests/"
 
 [tools.spec]
 output = "docs/openapi.yaml"
 ```
 
----
-
-## Plugin System
-
-```python
-from cet import tool, ClaudeClient
-
-@tool("db-review", description="Review SQL migrations for risk")
-def db_review(file: str, client: ClaudeClient) -> str:
-    code = open(file).read()
-    return client.ask(prompt_template="db_review", context={"code": code})
-```
-
-```bash
-cet db-review migrations/0042_add_payments.sql
-```
+Team conventions are injected into the PR review prompt — reviews feel like they know your codebase.
 
 ---
 
 ## GitHub Actions
-
 ```yaml
-- name: Install cet
-  run: pip install claude-engineer-toolkit
+name: AI PR Review
+on: [pull_request]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: pip install claude-engineer-toolkit
+      - run: cet pr --branch ${{ github.base_ref }} --output github-comment
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+```
 
-- name: AI PR Review
-  env:
-    ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-  run: cet pr --branch ${{ github.base_ref }}
+---
+
+## Caching
+
+Responses cached locally at `~/.cet/cache/`, keyed on file content hash.
+Re-running `cet explain` on an unchanged file is instant and free.
+```bash
+cet cache --status    # show cache size
+cet cache --clear     # clear everything
 ```
 
 ---
 
 ## Roadmap
 
+- [ ] `cet test` — generate pytest scaffolds for any Python file
 - [ ] `cet doc` — generate inline docs and README sections
 - [ ] `cet env` — audit `.env` files for missing vars and security risks
-- [ ] `cet migrate` — PHP → Python migration co-pilot
+- [ ] `cet migrate` — PHP to Python migration co-pilot
+- [ ] Plugin system — add custom tools via decorator
 - [ ] VS Code extension
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). New tools especially welcome.
-
+New tools are especially welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 ```bash
-git clone https://github.com/yourusername/claude-engineer-toolkit
+git clone https://github.com/thitami/claude-engineer-toolkit
 cd claude-engineer-toolkit
+python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-pytest
+pytest   # 48 tests, all green
 ```
 
 ---
 
-MIT License · Built by a backend engineer, for backend engineers.
+MIT License
+
+*Built by a backend engineer with 14 years of PHP and Python scars.
+If you have ever opened a legacy file and thought "what is this" — this tool is for you.*
