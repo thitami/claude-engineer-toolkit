@@ -17,7 +17,10 @@ cet pr --branch main                    # review your diff like a senior enginee
 cet spec ./routes/ --framework fastapi  # generate OpenAPI spec from code
 ```
 
-<!-- TODO: add demo GIF here -->
+
+---
+
+![cet demo](demo/cet-demo.gif)
 
 ---
 
@@ -126,6 +129,39 @@ Team conventions are injected into the PR review prompt — reviews feel like th
 
 ---
 
+
+## Docker
+
+No Python setup required — run `cet` directly from Docker.
+
+**One-off run:**
+```bash
+docker run --rm \
+  -e ANTHROPIC_API_KEY=your_key \
+  -v $(pwd):/code \
+  ghcr.io/thitami/claude-engineer-toolkit \
+  explain src/auth.py
+```
+
+**With docker compose (mounts your current project):**
+```bash
+export ANTHROPIC_API_KEY=your_key
+docker compose run --rm cet explain src/auth.py
+docker compose run --rm cet pr --branch main
+docker compose run --rm cet spec src/routes/
+```
+
+**In GitHub Actions CI:**
+```yaml
+- name: AI PR Review
+  run: |
+    docker run --rm \
+      -e ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }} \
+      -v ${{ github.workspace }}:/code \
+      ghcr.io/thitami/claude-engineer-toolkit \
+      pr --branch ${{ github.base_ref }}
+```
+
 ## GitHub Actions
 ```yaml
 name: AI PR Review
@@ -158,8 +194,8 @@ cet cache --clear     # clear everything
 
 ## Roadmap
 
-- [ ] `cet test` — generate pytest scaffolds for any Python file
-- [ ] `cet doc` — generate inline docs and README sections
+- [x] `cet test` — generate pytest scaffolds for any Python file
+- [x] `cet doc` — add inline docs and docstrings to any code file
 - [ ] `cet env` — audit `.env` files for missing vars and security risks
 - [ ] `cet migrate` — PHP to Python migration co-pilot
 - [ ] Plugin system — add custom tools via decorator
