@@ -1,0 +1,9 @@
+services:
+  cet:
+    build: .
+    image: cet:latest
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - .:/code          # mount current project into /code
+    working_dir: /code
