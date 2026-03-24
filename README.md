@@ -162,6 +162,29 @@ docker compose run --rm cet spec src/routes/
       pr --branch ${{ github.base_ref }}
 ```
 
+
+## Docker
+
+No Python setup required — run `cet` directly from Docker.
+```bash
+# Pull and run
+docker pull ghcr.io/thitami/claude-engineer-toolkit
+
+# Run against a file in your current directory
+docker run --rm \
+  -e ANTHROPIC_API_KEY=your_key \
+  -v $(pwd):/code \
+  ghcr.io/thitami/claude-engineer-toolkit \
+  explain /code/src/auth.py
+
+# PR review
+docker run --rm \
+  -e ANTHROPIC_API_KEY=your_key \
+  -v $(pwd):/code \
+  ghcr.io/thitami/claude-engineer-toolkit \
+  pr --branch main
+```
+
 ## GitHub Actions
 ```yaml
 name: AI PR Review
