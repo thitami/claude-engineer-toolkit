@@ -80,6 +80,51 @@ def test_get_diff_branch(mock_run):
     assert "git" in str(mock_run.call_args)
     assert "main" in str(mock_run.call_args)
 ''',
+        "doc": '''"""
+Payment processor module for handling Stripe and PayPal transactions.
+
+This module is the primary entry point for all billing operations.
+It wraps third-party payment APIs and provides a unified interface
+for the rest of the application.
+"""
+from typing import Optional
+
+# SECURITY: API key loaded from env — never hardcode
+API_KEY = os.environ.get("PAYMENT_API_KEY")
+
+
+def process_payment(amount: float, currency: str, customer_id: str) -> dict:
+    """Process a payment transaction.
+
+    Args:
+        amount: Transaction amount in the specified currency.
+        currency: ISO 4217 currency code (e.g. "USD", "EUR").
+        customer_id: Internal customer identifier.
+
+    Returns:
+        dict with keys: transaction_id, status, amount, currency.
+
+    Raises:
+        PaymentError: If the payment gateway rejects the transaction.
+        ValueError: If amount is negative or currency is invalid.
+    """
+    # NOTE: amount validation happens here — gateway will also validate
+    # but we want to fail fast before making the network call
+    if amount <= 0:
+        raise ValueError(f"Amount must be positive, got {amount}")
+
+    return _call_gateway(amount, currency, customer_id)
+
+
+def _call_gateway(amount: float, currency: str, customer_id: str) -> dict:
+    """Internal gateway call — do not use directly.
+
+    Retries up to 3 times on network errors (not on payment failures).
+    """
+    # SECURITY: customer_id is passed as a parameter, not interpolated
+    # into a query string — safe against injection
+    pass
+''',
     "spec": """openapi: 3.1.0
 info:
   title: PR Review Tool API

@@ -39,9 +39,23 @@ def explain_tool(
 
     print_header("explain", file, meta)
 
+    code = read_file(file)
+
+    if mock:
+        console.print("[yellow]Mock mode — skipping API call[/yellow]")
+        results = [f"Mock explanation:\n\n{code}"]
+        final = "\n\n---\n\n".join(results)
+
+        if output:
+            Path(output).write_text(final)
+            print_success(f"Written to {output}")
+        else:
+            print_result(final, elapsed=None)
+
+        return
+
     config = Config.load()
     client = ClaudeClient(config)
-    code = read_file(file)
     project_context = _build_project_context(config)
 
     chunks = chunk_text(code)

@@ -10,6 +10,7 @@ from rich import print as rprint
 from cet.tools.explain import explain_tool
 from cet.tools.pr_review import pr_tool
 from cet.tools.test_gen import test_tool
+from cet.tools.doc_gen import doc_tool
 from cet.tools.spec_gen import spec_tool
 from cet.cache import cache_manager
 from cet import __version__
@@ -101,7 +102,7 @@ def test(
       cet test src/api/payments.py --coverage-focus edge-cases
       cet test src/utils.py --output tests/test_utils.py
     """
-    test_tool(file=file, framework=framework, output=output, coverage_focus=coverage_focus, no_cache=no_cache)
+    test_tool(file=file, framework=framework, output=output, coverage_focus=coverage_focus, no_cache=no_cache, mock=mock)
 
 
 @app.command()
@@ -122,6 +123,26 @@ def spec(
       cet spec . --framework fastapi --format json
     """
     spec_tool(path=path, framework=framework, output=output, fmt=format, no_cache=no_cache, mock=mock)
+
+
+
+@app.command()
+def doc(
+    file: str = typer.Argument(..., help="File to add documentation to"),
+    output: str = typer.Option(None, "--output", "-o", help="Write documented file to this path"),
+    inplace: bool = typer.Option(False, "--inplace", "-i", help="Edit the file in-place"),
+    mock: bool = typer.Option(False, "--mock", help="Use mock response, no API call"),
+    no_cache: bool = typer.Option(False, "--no-cache", help="Skip cache lookup"),
+) -> None:
+    """
+    [bold]Add inline docs and docstrings to any code file.[/bold]
+
+    Examples:
+      cet doc src/services/user_service.py
+      cet doc legacy_auth.php --output legacy_auth_documented.php
+      cet doc src/utils.py --inplace
+    """
+    doc_tool(file=file, output=output, inplace=inplace, no_cache=no_cache, mock=mock)
 
 
 @app.command()
