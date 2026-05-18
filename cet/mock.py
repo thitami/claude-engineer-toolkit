@@ -80,7 +80,47 @@ def test_get_diff_branch(mock_run):
     assert "git" in str(mock_run.call_args)
     assert "main" in str(mock_run.call_args)
 ''',
-        "env": """
+        "migrate": """
+## Overview
+This is a PHP authentication module using deprecated mysql_* functions, MD5 password hashing, global state, and raw SQL queries. Migration complexity: **High**. The code has three critical security vulnerabilities that must be fixed during migration.
+
+## Framework Mapping
+- Raw PHP → FastAPI
+- mysql_connect / mysql_query → SQLAlchemy
+- $_COOKIE / $_SERVER → FastAPI Request object + JWT
+- MD5 password hashing → bcrypt (passlib)
+- Global $__sess array → Redis session store or JWT
+- file_put_contents log → Python logging module
+
+## Function-by-Function Plan
+
+**_chk_tok($tok, $uid)**
+Validates a session token. Python equivalent: a JWT verification function using python-jose. Gotcha: the current implementation stores sessions in a global array — replace with Redis or a DB-backed session store.
+
+**login($user, $pass)**
+Authenticates a user. Python equivalent: FastAPI POST /auth/login endpoint with SQLAlchemy query. Critical: replace MD5 with bcrypt. Replace raw SQL with parameterised SQLAlchemy query to fix SQL injection.
+
+**require_role($role)**
+Role-based access control. Python equivalent: FastAPI dependency with Depends(). Much cleaner in FastAPI than the current header/cookie juggling.
+
+## PHP-isms to Watch
+- `global $__sess` — global mutable state, replace with Redis or DB sessions
+- `mysql_connect` — deprecated since PHP 5.5, removed in PHP 7
+- `@file_put_contents` — error suppression hiding failures, replace with proper logging
+- `$_COOKIE['remember']` — cookie handling needs HTTPS-only and SameSite flags in Python equivalent
+
+## Security Improvements
+1. SQL injection in login(): `$q = "SELECT * FROM users WHERE username='" . $user . "'"` — replace with parameterised query
+2. MD5 password hashing — replace with bcrypt via passlib
+3. Hardcoded SECRET constant — move to environment variable
+4. Token uses MD5(uid + secret + seed) — replace with JWT signed with RS256
+
+## Migration Complexity
+Score: **High**
+Estimated effort: 3-4 days for a solo engineer
+Main blockers: session management redesign, password hash migration strategy, SQL injection cleanup
+""",
+    "env": """
 ## Summary
 Configuration has 3 missing variables, 2 security flags, and 4 undocumented vars.
 

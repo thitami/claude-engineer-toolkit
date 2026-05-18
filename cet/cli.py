@@ -12,6 +12,7 @@ from cet.tools.pr_review import pr_tool
 from cet.tools.test_gen import test_tool
 from cet.tools.doc_gen import doc_tool
 from cet.tools.env_audit import env_tool
+from cet.tools.migrate import migrate_tool
 from cet.tools.spec_gen import spec_tool
 from cet.cache import cache_manager
 from cet import __version__
@@ -145,6 +146,29 @@ def doc(
     """
     doc_tool(file=file, output=output, inplace=inplace, no_cache=no_cache, mock=mock)
 
+
+
+
+@app.command()
+def migrate(
+    file: str = typer.Argument(..., help="PHP file to migrate"),
+    framework: str = typer.Option("fastapi", "--framework", "-f", help="Target Python framework: fastapi, flask, django"),
+    output: str = typer.Option(None, "--output", "-o", help="Write output to this file"),
+    translate: bool = typer.Option(False, "--translate", "-t", help="Translate to Python (default: analyse only)"),
+    report: bool = typer.Option(False, "--report", "-r", help="Generate full migration report"),
+    mock: bool = typer.Option(False, "--mock", help="Use mock response, no API call"),
+    no_cache: bool = typer.Option(False, "--no-cache", help="Skip cache lookup"),
+) -> None:
+    """
+    [bold]PHP to Python migration co-pilot.[/bold]
+
+    Examples:
+      cet migrate legacy_auth.php
+      cet migrate legacy_auth.php --framework fastapi
+      cet migrate legacy_auth.php --translate --output auth.py
+      cet migrate legacy_auth.php --report
+    """
+    migrate_tool(file=file, framework=framework, output=output, translate=translate, report=report, no_cache=no_cache, mock=mock)
 
 
 @app.command()
