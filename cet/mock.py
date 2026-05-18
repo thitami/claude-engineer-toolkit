@@ -80,7 +80,33 @@ def test_get_diff_branch(mock_run):
     assert "git" in str(mock_run.call_args)
     assert "main" in str(mock_run.call_args)
 ''',
-        "doc": '''"""
+        "env": """
+## Summary
+Configuration has 3 missing variables, 2 security flags, and 4 undocumented vars.
+
+## Missing Variables
+DATABASE_URL — required for all database connections
+REDIS_URL — required for cache and session storage
+SENTRY_DSN — required for error tracking in production
+
+## Security Flags
+🔴 CRITICAL: SECRET_KEY value "dev-secret-123" looks like a weak development default — must be replaced with a cryptographically random value in production
+🟠 WARNING: AWS_SECRET_ACCESS_KEY is present in .env.example — secret keys should never appear in example files, use a placeholder like "your-aws-secret-key-here"
+
+## Undocumented Variables
+QUEUE_TIMEOUT — suggest: # Maximum seconds to wait for a queue job before timing out
+MAX_UPLOAD_SIZE — suggest: # Maximum file upload size in bytes
+DEBUG_MODE — suggest: # Set to true to enable debug logging and error pages
+CACHE_TTL — suggest: # Cache time-to-live in seconds
+
+## Recommendations
+1. Replace SECRET_KEY placeholder with instructions for generating a secure value: python -c "import secrets; print(secrets.token_hex(32))"
+2. Remove AWS_SECRET_ACCESS_KEY from .env.example entirely — document it as a required external secret instead
+3. Add DATABASE_URL, REDIS_URL, and SENTRY_DSN to .env.example with clear placeholder values
+4. Add a comment block at the top of .env.example explaining which vars are required vs optional
+5. Consider splitting into .env.example (safe defaults) and .env.secrets.example (sensitive vars) to make the security boundary explicit
+""",
+    "doc": '''"""
 Payment processor module for handling Stripe and PayPal transactions.
 
 This module is the primary entry point for all billing operations.

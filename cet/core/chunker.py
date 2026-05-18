@@ -9,7 +9,6 @@ from typing import Iterator
 
 MAX_CHUNK_CHARS = 80_000  # ~20k tokens, safe for claude-sonnet
 
-
 def read_file(path: str) -> str:
     """Read a file and return its content."""
     return Path(path).read_text(encoding="utf-8", errors="replace")

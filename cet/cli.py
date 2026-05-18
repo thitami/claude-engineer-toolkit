@@ -11,6 +11,7 @@ from cet.tools.explain import explain_tool
 from cet.tools.pr_review import pr_tool
 from cet.tools.test_gen import test_tool
 from cet.tools.doc_gen import doc_tool
+from cet.tools.env_audit import env_tool
 from cet.tools.spec_gen import spec_tool
 from cet.cache import cache_manager
 from cet import __version__
@@ -143,6 +144,26 @@ def doc(
       cet doc src/utils.py --inplace
     """
     doc_tool(file=file, output=output, inplace=inplace, no_cache=no_cache, mock=mock)
+
+
+
+@app.command()
+def env(
+    file: str = typer.Argument(..., help=".env.example file to audit"),
+    actual: str = typer.Option(None, "--diff", "-d", help="Compare against actual .env file"),
+    doc: bool = typer.Option(False, "--doc", help="Generate documentation for each variable"),
+    mock: bool = typer.Option(False, "--mock", help="Use mock response, no API call"),
+    no_cache: bool = typer.Option(False, "--no-cache", help="Skip cache lookup"),
+) -> None:
+    """
+    [bold]Audit .env files for missing vars, security issues, and documentation.[/bold]
+
+    Examples:
+      cet env .env.example
+      cet env .env.example --diff .env
+      cet env .env.example --doc
+    """
+    env_tool(file=file, actual=actual, doc=doc, no_cache=no_cache, mock=mock)
 
 
 @app.command()
