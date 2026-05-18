@@ -219,7 +219,7 @@ cet cache --clear     # clear everything
 
 - [x] `cet test` — generate pytest scaffolds for any Python file
 - [x] `cet doc` — add inline docs and docstrings to any code file
-- [ ] `cet env` — audit `.env` files for missing vars and security risks
+- [x] `cet env` — audit `.env` files for missing vars, security issues, and documentation
 - [ ] `cet migrate` — PHP to Python migration co-pilot
 - [ ] Plugin system — add custom tools via decorator
 - [ ] VS Code extension
