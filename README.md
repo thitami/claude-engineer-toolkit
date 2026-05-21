@@ -89,6 +89,21 @@ Output: valid OpenAPI 3.1 YAML with inferred schemas, auth, status codes, and re
 
 ---
 
+### `cet changelog` — generate CHANGELOG entries from git commits
+
+Point it at your recent commits and get a structured Keep a Changelog entry.
+
+```bash
+cet changelog
+cet changelog --since v1.0.0
+cet changelog --commits 20
+cet changelog --output CHANGELOG.md
+```
+
+Output: grouped Added / Changed / Fixed / Security sections, noise filtered out.
+
+---
+
 ## Installation
 ```bash
 pip install claude-engineer-toolkit
@@ -221,6 +236,7 @@ cet cache --clear     # clear everything
 - [x] `cet doc` — add inline docs and docstrings to any code file
 - [x] `cet env` — audit `.env` files for missing vars, security issues, and documentation
 - [x] `cet migrate` — PHP to Python migration co-pilot
+- [x] `cet changelog` — generate CHANGELOG entries from git commits
 - [ ] Plugin system — add custom tools via decorator
 - [ ] VS Code extension
 
