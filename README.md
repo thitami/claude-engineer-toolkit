@@ -6,7 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/claude-engineer-toolkit.svg)](https://badge.fury.io/py/claude-engineer-toolkit)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-93%20passing-brightgreen.svg)](tests/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 ```bash
 pip install claude-engineer-toolkit
