@@ -80,7 +80,29 @@ def test_get_diff_branch(mock_run):
     assert "git" in str(mock_run.call_args)
     assert "main" in str(mock_run.call_args)
 ''',
-        "migrate": """
+        "changelog": """
+## [Unreleased] - 2025-05-18
+
+### Added
+- `cet migrate` — PHP to Python migration co-pilot with analyse and translate modes
+- `cet env` — audit `.env` files for missing variables, security issues, and documentation gaps
+- `cet doc` — add inline docstrings and comments to any code file
+- `cet test` — generate pytest scaffolds with edge cases and mocks
+- Docker support with bind mount for local file access
+
+### Changed
+- PR review prompt restructured to lead with verdict before explanation, improving output quality
+- Terminal UI unified across all tools with consistent header panels and rule dividers
+- Response caching now keyed on file content hash for more reliable cache hits
+
+### Fixed
+- `cet pr` mock mode no longer attempts git operations before checking mock flag
+- Config loading moved after mock check in all tools to avoid requiring API key in mock mode
+
+### Security
+- Added warning for `team_conventions` prompt injection via unsanitized TOML input
+""",
+    "migrate": """
 ## Overview
 This is a PHP authentication module using deprecated mysql_* functions, MD5 password hashing, global state, and raw SQL queries. Migration complexity: **High**. The code has three critical security vulnerabilities that must be fixed during migration.
 

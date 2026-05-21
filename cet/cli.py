@@ -13,6 +13,7 @@ from cet.tools.test_gen import test_tool
 from cet.tools.doc_gen import doc_tool
 from cet.tools.env_audit import env_tool
 from cet.tools.migrate import migrate_tool
+from cet.tools.changelog import changelog_tool
 from cet.tools.spec_gen import spec_tool
 from cet.cache import cache_manager
 from cet import __version__
@@ -188,6 +189,27 @@ def env(
       cet env .env.example --doc
     """
     env_tool(file=file, actual=actual, doc=doc, no_cache=no_cache, mock=mock)
+
+
+
+@app.command()
+def changelog(
+    since: str = typer.Option(None, "--since", "-s", help="Generate since this tag or commit (e.g. v1.0.0)"),
+    commits: int = typer.Option(10, "--commits", "-n", help="Number of commits to include (default: 10)"),
+    output: str = typer.Option(None, "--output", "-o", help="Append to this file (e.g. CHANGELOG.md)"),
+    mock: bool = typer.Option(False, "--mock", help="Use mock response, no API call"),
+    no_cache: bool = typer.Option(False, "--no-cache", help="Skip cache lookup"),
+) -> None:
+    """
+    [bold]Generate a CHANGELOG entry from recent git commits.[/bold]
+
+    Examples:
+      cet changelog
+      cet changelog --since v1.0.0
+      cet changelog --commits 20
+      cet changelog --output CHANGELOG.md
+    """
+    changelog_tool(since=since, commits=commits, output=output, no_cache=no_cache, mock=mock)
 
 
 @app.command()
