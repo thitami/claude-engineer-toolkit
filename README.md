@@ -25,8 +25,6 @@ cet changelog                           # generate CHANGELOG from commits
 
 ---
 
-![cet demo](demo/cet-demo.gif)
-
 ---
 
 ## The problem
