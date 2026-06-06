@@ -35,7 +35,7 @@ class ClaudeClient:
     ) -> str:
         """Send a prompt to Claude and return the response text."""
 
-        from cet.mock import get_mock_response; return get_mock_response(tool_name) # MOCK
+
         cache_key = self._make_cache_key(tool_name, system, user)
 
         if use_cache and self.config.cache_enabled:
