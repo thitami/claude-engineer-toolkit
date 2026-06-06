@@ -13,8 +13,13 @@ pip install claude-engineer-toolkit
 export ANTHROPIC_API_KEY=your_key
 
 cet explain legacy_auth.php             # understand any code in seconds
+cet migrate legacy_auth.php             # PHP to Python migration plan
 cet pr --branch main                    # review your diff like a senior engineer
 cet spec ./routes/ --framework fastapi  # generate OpenAPI spec from code
+cet test user_service.py                # generate pytest scaffolds
+cet doc auth.py --inplace               # add inline docstrings
+cet env .env.example                    # audit for security issues
+cet changelog                           # generate CHANGELOG from commits
 ```
 
 
@@ -86,6 +91,45 @@ cet spec . --framework flask --format json
 ```
 
 Output: valid OpenAPI 3.1 YAML with inferred schemas, auth, status codes, and realistic examples.
+
+---
+
+### `cet migrate` — PHP to Python migration co-pilot
+
+Point it at a legacy PHP file and get a complete migration plan. Optionally translate to Python.
+
+    cet migrate legacy_auth.php
+    cet migrate legacy_auth.php --framework fastapi
+    cet migrate legacy_auth.php --translate --output auth.py
+
+Output: framework mapping, function-by-function plan, PHP-isms to watch, security improvements, complexity score. Translate mode produces Python with # MIGRATION: and # SECURITY: comments throughout.
+
+---
+
+### `cet test` — generate pytest scaffolds
+
+    cet test src/services/user_service.py
+    cet test src/api/payments.py --coverage-focus edge-cases
+    cet test src/utils.py --output tests/test_utils.py
+
+---
+
+### `cet doc` — add inline documentation
+
+Adds docstrings and inline comments to any code file without changing the logic.
+
+    cet doc src/services/user_service.py
+    cet doc legacy_auth.php --output legacy_auth_documented.php
+    cet doc src/utils.py --inplace
+
+---
+
+### `cet env` — audit .env files
+
+    cet env .env.example
+    cet env .env.example --diff .env
+    cet env .env.example --doc
+
 
 ---
 
@@ -178,7 +222,7 @@ docker compose run --rm cet spec src/routes/
 ```
 
 
-## Docker
+
 
 No Python setup required — run `cet` directly from Docker.
 ```bash
@@ -250,7 +294,7 @@ git clone https://github.com/thitami/claude-engineer-toolkit
 cd claude-engineer-toolkit
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-pytest   # 48 tests, all green
+pytest   # 93 tests, all green
 ```
 
 ---
